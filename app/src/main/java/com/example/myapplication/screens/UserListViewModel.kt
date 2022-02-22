@@ -3,11 +3,15 @@ package com.example.myapplication.screens
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.myapplication.Event
 import com.example.myapplication.R
 import com.example.myapplication.UserActionListener
 import com.example.myapplication.model.User
 import com.example.myapplication.model.UsersListener
 import com.example.myapplication.model.UsersService
+import com.example.myapplication.navigator.Navigator
+import com.example.myapplication.screens.base.BaseScreen
+import com.example.myapplication.screens.base.BaseViewModel
 import com.example.myapplication.task.*
 
 data class UserListItem(
@@ -17,7 +21,9 @@ data class UserListItem(
 
 
 class UserListViewModel(
-    private val usersService: UsersService
+    private val usersService: UsersService,
+    private val navigator: Navigator,
+    screen: BaseScreen
 ) : BaseViewModel(), UserActionListener {
 
     private val _users = MutableLiveData<Result<List<UserListItem>>>() //Mutable not only listen data also can change, private only for VM
@@ -126,8 +132,17 @@ class UserListViewModel(
             .autoCancel()
     }
 
+
+    //Listening to result from details fragment, if i want to delete user from details fragment
+    override fun onResult(result: Any) {
+        if(result is String){
+
+        }
+    }
+
     override fun onUserDetails(user: User) {
-       _actionShowDetails.value = Event(user)
+        navigator.launch(UserDetailsFragment.Screen(useID = user.id))
+       //_actionShowDetails.value = Event(user)
     }
 
 }

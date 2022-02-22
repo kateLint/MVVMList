@@ -11,11 +11,22 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentUserDetailsBinding
+import com.example.myapplication.model.User
+import com.example.myapplication.model.UserDetails
+import com.example.myapplication.screens.base.BaseFragment
+import com.example.myapplication.screens.base.BaseScreen
+import com.example.myapplication.screens.base.screenViewModel
 import com.example.myapplication.task.SuccessResult
 
-class UserDetailsFragment : Fragment(){
+class UserDetailsFragment : BaseFragment(){
+
+    class Screen(val useID: Long): BaseScreen
+
     private lateinit var binding: FragmentUserDetailsBinding
-    private val viewModel: UserDetailsViewModel by viewModels { factory()}
+   // private val viewModel: UserDetailsViewModel by viewModels { factory()}
+
+    override val viewModel by screenViewModel<UserDetailsViewModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,15 +41,9 @@ class UserDetailsFragment : Fragment(){
         binding = FragmentUserDetailsBinding.inflate(layoutInflater, container, false)
 
 
-        viewModel.actionGoBack.observe(viewLifecycleOwner, Observer {
-            it.getValue()?.let{
-                    navigator().goBack()
-            }
-        })
-
         viewModel.actionShowToast.observe(viewLifecycleOwner, Observer {
             it.getValue()?.let{
-                    messageRes-> navigator().toast(messageRes = messageRes)
+                   // messageRes-> navigator().toast(messageRes = messageRes)
             }
         })
 

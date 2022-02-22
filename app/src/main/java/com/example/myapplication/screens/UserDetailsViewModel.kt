@@ -2,21 +2,25 @@ package com.example.myapplication.screens
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myapplication.Event
 import com.example.myapplication.R
-import com.example.myapplication.UserNotFoundException
 import com.example.myapplication.model.UserDetails
 import com.example.myapplication.model.UsersService
+import com.example.myapplication.navigator.Navigator
+import com.example.myapplication.screens.base.BaseViewModel
 import com.example.myapplication.task.*
 
-class UserDetailsViewModel(private val usersService: UsersService) : BaseViewModel() {
+class UserDetailsViewModel(private val usersService: UsersService,
+                           private val navigator: Navigator,
+                           screen: UserListFragment.Screen) : BaseViewModel() {
     private val _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
 
     val _actionShowToast = MutableLiveData<Event<Int>>()
     val actionShowToast: LiveData<Event<Int>> = _actionShowToast
 
-    val _actionGoBack = MutableLiveData<Event<Unit>>()
-    val actionGoBack: LiveData<Event<Unit>> = _actionGoBack
+  /*  val _actionGoBack = MutableLiveData<Event<Unit>>()
+    val actionGoBack: LiveData<Event<Unit>> = _actionGoBack*/
 
     private val currentState: State get() = state.value!!
 
@@ -25,7 +29,10 @@ class UserDetailsViewModel(private val usersService: UsersService) : BaseViewMod
             userDetailsResult = EmptyResult(),
             deletingInProgress = false
         )
+        loadUser(screen as Long)
+
     }
+
 
     fun loadUser(userId: Long){
         if(currentState.userDetailsResult is SuccessResult) return
@@ -38,10 +45,9 @@ class UserDetailsViewModel(private val usersService: UsersService) : BaseViewMod
             }
             .onError {
                 _actionShowToast.value = Event(R.string.cant_load_user_details)
-                _actionGoBack.value = Event(Unit)
+                navigator.goBack()
             }
             .autoCancel()
-
     }
 
     fun deleteUser(){
@@ -49,9 +55,10 @@ class UserDetailsViewModel(private val usersService: UsersService) : BaseViewMod
         if(userDetailsResult !is SuccessResult) return
         _state.value = currentState.copy(deletingInProgress = true)
         usersService.deleteUser(userDetailsResult.data.user)
+
             .onSuccess {
                 _actionShowToast.value = Event(R.string.user_has_been_deleted)
-                _actionGoBack.value = Event(Unit)
+                navigator.goBack()
             }
             .onError {
                 _state.value = currentState.copy(deletingInProgress = false)

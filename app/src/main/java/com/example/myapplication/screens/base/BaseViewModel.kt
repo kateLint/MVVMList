@@ -1,24 +1,15 @@
-package com.example.myapplication.screens
+package com.example.myapplication.screens.base
 
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.task.Task
 
 
-class Event<T>(
-    private val value: T
-) {
+open class BaseViewModel: ViewModel() {
 
-    private var handled: Boolean = false
+    open fun onResult(result: Any){
 
-    fun getValue(): T? {
-        if (handled) return null
-        handled = true
-        return value
     }
 
-}
-
-open class BaseViewModel: ViewModel() {
 
     private val task = mutableListOf<Task<*>>()
     override fun onCleared() {

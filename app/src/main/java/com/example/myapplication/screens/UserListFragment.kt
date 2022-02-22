@@ -12,17 +12,26 @@ import com.example.myapplication.UserActionListener
 import com.example.myapplication.UsersAdapter
 import com.example.myapplication.databinding.FragmentUsersListBinding
 import com.example.myapplication.model.User
+import com.example.myapplication.model.UserDetails
+import com.example.myapplication.screens.base.BaseFragment
+import com.example.myapplication.screens.base.BaseScreen
+import com.example.myapplication.screens.base.screenViewModel
 import com.example.myapplication.task.EmptyResult
 import com.example.myapplication.task.ErrorResult
 import com.example.myapplication.task.PendingResult
 import com.example.myapplication.task.SuccessResult
 
-class UserListFragment: Fragment()
+class UserListFragment: BaseFragment()
 {
+
+    inner class Screen : BaseScreen
+
     private lateinit var binding: FragmentUsersListBinding
     private lateinit var adapter: UsersAdapter
 
-    private val viewModel: UserListViewModel by viewModels{factory()}
+    override val viewModel by screenViewModel<UserListViewModel>()
+
+   // private val viewModel: UserListViewModel by viewModels{factory()}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +41,21 @@ class UserListFragment: Fragment()
         binding = FragmentUsersListBinding.inflate(inflater,container,false)
         adapter = UsersAdapter(viewModel)
 
+
+        object: UserActionListener{
+            override fun onUserMove(user: User, moveBy: Int) {
+
+            }
+
+            override fun onUserDelete(user: User) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onUserDetails(user: User) {
+               viewModel.onUserDetails(user)
+            }
+
+        }
 
   /*      object : UserActionListener {
             override fun onUserMove(user: User, moveBy: Int) {
@@ -67,17 +91,18 @@ class UserListFragment: Fragment()
 
         })
 
-        viewModel.actionShowDetails.observe(viewLifecycleOwner, Observer {
+
+     /*   viewModel.actionShowDetails.observe(viewLifecycleOwner, Observer {
             it.getValue()?.let{
                 user-> navigator().showDetails(user)
             }
-        })
+        })*/
 
-        viewModel.actionShowToast.observe(viewLifecycleOwner, Observer {
+   /*     viewModel.actionShowToast.observe(viewLifecycleOwner, Observer {
             it.getValue()?.let{
                     messageRes-> navigator().toast(messageRes = messageRes)
             }
-        })
+        })*/
 
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
